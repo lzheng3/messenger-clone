@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FieldValues, useForm, SubmitHandler } from "react-hook-form";
 import Input from "./inputs/Input";
 import Button from "./Button";
@@ -14,9 +14,15 @@ type Variant = "LOGIN" | "REGISTER";
 
 const AuthForm = () => {
   const router = useRouter();
-  // const sesstion = useSession();
+  const session = useSession();
   const [variant, setVariant] = useState<Variant>("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      router.push("/conversations");
+    }
+  }, [session?.status, router]);
 
   const toggleVariant = useCallback(() => {
     variant === "LOGIN" ? setVariant("REGISTER") : setVariant("LOGIN");
@@ -69,6 +75,7 @@ const AuthForm = () => {
 
           if (callback?.ok && !callback?.error) {
             toast.success("Success Login!");
+            router.push("/conversations");
           }
         })
         .finally(() => setIsLoading(false));
@@ -85,6 +92,7 @@ const AuthForm = () => {
 
         if (callback?.ok && !callback?.error) {
           toast.success("Success Login!");
+          router.push("/conversations");
         }
       })
       .finally(() => setIsLoading(false));
